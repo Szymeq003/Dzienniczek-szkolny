@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Nauczycieli</title>
+</head>
+
+<body>
+
+    <h1>Dodaj Nauczyciela</h1>
+
+    <form th:action="@{/add}" method="post" th:object="${newTeacher}">
+        <label>Imię: <input type="text" th:field="*{firstName}" /></label><br />
+        <label>Nazwisko: <input type="text" th:field="*{lastName}" /></label><br />
+        <label>Email: <input type="text" th:field="*{email}" /></label><br />
+        <button type="submit">Zapisz do bazy</button>
+    </form>
+
+    <hr />
+
+    <h1>Obecni nauczyciele w bazie</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Imię</th>
+                <th>Nazwisko</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="t : ${teachers}">
+                <td th:text="${t.id}"></td>
+                <td th:text="${t.firstName}"></td>
+                <td th:text="${t.lastName}"></td>
+                <td th:text="${t.email}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(teachers)}">
+                <td colspan="4">Brak nauczycieli w bazie.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>
