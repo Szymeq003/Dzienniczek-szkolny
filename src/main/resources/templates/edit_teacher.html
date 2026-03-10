@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edytuj Nauczyciela</title>
+</head>
+
+<body>
+
+    <h1>Edytuj Nauczyciela</h1>
+
+    <form th:action="@{/edit/{id}(id=${teacher.id})}" method="post" th:object="${teacher}">
+        <label>Imię: <input type="text" th:field="*{firstName}" /></label><br />
+        <label>Nazwisko: <input type="text" th:field="*{lastName}" /></label><br />
+        <label>Email: <input type="text" th:field="*{email}" /></label><br />
+        <button type="submit">Zapisz Zmiany</button>
+    </form>
+
+    <br />
+    <a th:href="@{/}">Powrót do listy</a>
+
+</body>
+
+</html>

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
@@ -25,6 +26,26 @@ public class TeacherController {
     @PostMapping("/add")
     public String addTeacher(@ModelAttribute Teacher newTeacher) {
         teacherService.save(newTeacher);
+        return "redirect:/";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Teacher teacher = teacherService.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid teacher Id:" + id));
+        model.addAttribute("teacher", teacher);
+        return "edit_teacher";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String updateTeacher(@PathVariable Long id, @ModelAttribute Teacher teacher) {
+        teacher.setId(id);
+        teacherService.save(teacher);
+        return "redirect:/";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteTeacher(@PathVariable Long id) {
+        teacherService.delete(id);
         return "redirect:/";
     }
 }

@@ -28,6 +28,7 @@
                 <th>Imię</th>
                 <th>Nazwisko</th>
                 <th>Email</th>
+                <th>Akcje</th>
             </tr>
         </thead>
         <tbody>
@@ -36,9 +37,13 @@
                 <td th:text="${t.firstName}"></td>
                 <td th:text="${t.lastName}"></td>
                 <td th:text="${t.email}"></td>
+                <td>
+                    <a th:href="@{/edit/{id}(id=${t.id})}">Edytuj</a> | 
+                    <a th:href="@{/delete/{id}(id=${t.id})}" onclick="return confirm('Czy na pewno chcesz usunąć tego nauczyciela?');">Usuń</a>
+                </td>
             </tr>
             <tr th:if="${#lists.isEmpty(teachers)}">
-                <td colspan="4">Brak nauczycieli w bazie.</td>
+                <td colspan="5">Brak nauczycieli w bazie.</td>
             </tr>
         </tbody>
     </table>
