@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Uczniowie</title>
+</head>
+
+<body>
+
+    <h1><a th:href="@{/}">Powrót na stronę główną (Nauczyciele)</a></h1>
+    <hr />
+
+    <h1>Dodaj Ucznia</h1>
+
+    <form th:action="@{/students/add}" method="post" th:object="${newStudent}">
+        <label>Imię: <input type="text" th:field="*{firstName}" /></label><br />
+        <label>Nazwisko: <input type="text" th:field="*{lastName}" /></label><br />
+        <label>Email: <input type="text" th:field="*{email}" /></label><br />
+        <label>Klasa:
+            <select th:field="*{schoolClass}">
+                <option th:each="c : ${schoolClasses}" th:value="${c.id}" th:text="${c.name}"></option>
+            </select>
+        </label><br />
+        <button type="submit">Zapisz ucznia</button>
+    </form>
+
+    <hr />
+
+    <h1>Obecni uczniowie w bazie</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Imię</th>
+                <th>Nazwisko</th>
+                <th>Email</th>
+                <th>Klasa</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="s : ${students}">
+                <td th:text="${s.id}"></td>
+                <td th:text="${s.firstName}"></td>
+                <td th:text="${s.lastName}"></td>
+                <td th:text="${s.email}"></td>
+                <td th:text="${s.schoolClass.name}"></td>
+                <td>
+                    <a th:href="@{/students/edit/{id}(id=${s.id})}">Edytuj</a> |
+                    <a th:href="@{/students/delete/{id}(id=${s.id})}"
+                        onclick="return confirm('Czy na pewno chcesz usunąć tego ucznia?');">Usuń</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(students)}">
+                <td colspan="6">Brak uczniów w bazie.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>
