@@ -16,6 +16,7 @@ public class DataLoader implements CommandLineRunner {
     private final TeacherRepository teacherRepository;
     private final SubjectRepository subjectRepository;
     private final GradeRepository gradeRepository;
+    private final SchoolClassRepository schoolClassRepository;
 
     @Override
     public void run(String... args) {
@@ -72,45 +73,63 @@ public class DataLoader implements CommandLineRunner {
         s5.setTeacher(t2);
         subjectRepository.save(s5);
 
+        SchoolClass class3A = schoolClassRepository.findByName("3A").orElseGet(() -> {
+            SchoolClass c = new SchoolClass();
+            c.setName("3A");
+            return schoolClassRepository.save(c);
+        });
+
+        SchoolClass class3B = schoolClassRepository.findByName("3B").orElseGet(() -> {
+            SchoolClass c = new SchoolClass();
+            c.setName("3B");
+            return schoolClassRepository.save(c);
+        });
+
+        SchoolClass class2A = schoolClassRepository.findByName("2A").orElseGet(() -> {
+            SchoolClass c = new SchoolClass();
+            c.setName("2A");
+            return schoolClassRepository.save(c);
+        });
+
         Student st1 = new Student();
         st1.setFirstName("Jakub");
         st1.setLastName("Lewandowski");
-        st1.setSchoolClass("3A");
+        st1.setSchoolClass(class3A);
         st1.setEmail("j.lewandowski@uczen.pl");
         studentRepository.save(st1);
 
         Student st2 = new Student();
         st2.setFirstName("Maja");
         st2.setLastName("Kaminska");
-        st2.setSchoolClass("3A");
+        st2.setSchoolClass(class3A);
         st2.setEmail("m.kaminska@uczen.pl");
         studentRepository.save(st2);
 
         Student st3 = new Student();
         st3.setFirstName("Piotr");
         st3.setLastName("Wozniak");
-        st3.setSchoolClass("3B");
+        st3.setSchoolClass(class3B);
         st3.setEmail("p.wozniak@uczen.pl");
         studentRepository.save(st3);
 
         Student st4 = new Student();
         st4.setFirstName("Aleksandra");
         st4.setLastName("Dabrowska");
-        st4.setSchoolClass("3B");
+        st4.setSchoolClass(class3B);
         st4.setEmail("a.dabrowska@uczen.pl");
         studentRepository.save(st4);
 
         Student st5 = new Student();
         st5.setFirstName("Krzysztof");
         st5.setLastName("Szymanski");
-        st5.setSchoolClass("2A");
+        st5.setSchoolClass(class2A);
         st5.setEmail("k.szymanski@uczen.pl");
         studentRepository.save(st5);
 
         Student st6 = new Student();
         st6.setFirstName("Natalia");
         st6.setLastName("Wojciechowska");
-        st6.setSchoolClass("2A");
+        st6.setSchoolClass(class2A);
         st6.setEmail("n.wojciechowska@uczen.pl");
         studentRepository.save(st6);
 

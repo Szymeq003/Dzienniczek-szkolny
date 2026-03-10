@@ -29,7 +29,7 @@ public class StudentService {
         studentRepository.deleteById(id);
     }
 
-    public List<Student> findBySchoolClass(String schoolClass) {
-        return studentRepository.findBySchoolClass(schoolClass);
+    public List<Student> findBySchoolClassName(String schoolClass) {
+        return studentRepository.findBySchoolClassName(schoolClass);
     }
 }

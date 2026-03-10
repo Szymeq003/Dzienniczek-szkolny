@@ -28,9 +28,9 @@ public class Student {
     @Size(min = 2, max = 50)
     private String lastName;
 
-    @Column(name = "school_class")
-    @NotBlank(message = "Class is required")
-    private String schoolClass;
+    @ManyToOne
+    @JoinColumn(name = "school_class_id")
+    private SchoolClass schoolClass;
 
     @Column(name = "email")
     private String email;
