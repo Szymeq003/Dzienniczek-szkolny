@@ -32,4 +32,8 @@ public class StudentService {
     public List<Student> findBySchoolClassName(String schoolClass) {
         return studentRepository.findBySchoolClassName(schoolClass);
     }
+
+    public List<Student> findByClassIdAndSearch(Long classId, String search) {
+        return studentRepository.findByClassIdAndSearch(classId, search);
+    }
 }

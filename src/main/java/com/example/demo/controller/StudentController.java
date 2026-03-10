@@ -17,10 +17,15 @@ public class StudentController {
     private final SchoolClassRepository schoolClassRepository;
 
     @GetMapping
-    public String listStudents(Model model) {
-        model.addAttribute("students", studentService.findAll());
+    public String listStudents(
+            @RequestParam(required = false) Long classId,
+            @RequestParam(required = false) String search,
+            Model model) {
+        model.addAttribute("students", studentService.findByClassIdAndSearch(classId, search));
         model.addAttribute("newStudent", new Student());
         model.addAttribute("schoolClasses", schoolClassRepository.findAll());
+        model.addAttribute("selectedClassId", classId);
+        model.addAttribute("searchQuery", search);
         return "students";
     }
 

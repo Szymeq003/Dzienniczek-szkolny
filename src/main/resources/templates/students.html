@@ -27,7 +27,25 @@
 
     <hr />
 
-    <h1>Obecni uczniowie w bazie</h1>
+    <h1>Obecni uczniowie w bazie (Filtrowanie)</h1>
+
+    <form th:action="@{/students}" method="get">
+        <label>Wyszukaj (Imię/Nazwisko):
+            <input type="text" name="search" th:value="${searchQuery}" placeholder="Wpisz imię lub nazwisko..." />
+        </label>
+        <label>Filtrowanie klas:
+            <select name="classId">
+                <option value="">Wszystkie klasy</option>
+                <option th:each="c : ${schoolClasses}" th:value="${c.id}" th:text="${c.name}"
+                    th:selected="${c.id == selectedClassId}">
+                </option>
+            </select>
+        </label>
+        <button type="submit">Szukaj</button>
+        <a th:href="@{/students}"><button type="button">Wyczyść</button></a>
+    </form>
+
+    <br />
 
     <table border="1">
         <thead>
