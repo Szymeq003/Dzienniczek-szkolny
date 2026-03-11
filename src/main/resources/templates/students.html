@@ -53,7 +53,7 @@
                 <td th:text="${s.firstName}"></td>
                 <td th:text="${s.lastName}"></td>
                 <td th:text="${s.email}"></td>
-                <td th:text="${s.schoolClass.name}"></td>
+                <td th:text="${s.schoolClass != null ? s.schoolClass.name : 'Brak klasy'}"></td>
                 <td>
                     <a th:href="@{/students/edit/{id}(id=${s.id})}">Edytuj</a> |
                     <a th:href="@{/students/delete/{id}(id=${s.id})}"

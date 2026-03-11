@@ -23,4 +23,8 @@ public class SchoolClass {
 
     @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL)
     private List<Student> students = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "teacher_id")
+    private Teacher teacher;
 }

@@ -18,11 +18,16 @@
 
     <h1>Lista Klas</h1>
 
+    <a th:href="@{/classes/add}"><button>Dodaj Nową Klasę</button></a>
+    <br /><br />
+
     <table border="1">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Nazwa Klasy</th>
+                <th>Wychowawca</th>
+                <th>Liczba Uczniów</th>
                 <th>Akcje</th>
             </tr>
         </thead>
@@ -30,12 +35,15 @@
             <tr th:each="c : ${classes}">
                 <td th:text="${c.id}"></td>
                 <td th:text="${c.name}"></td>
+                <td th:text="${c.teacher != null ? c.teacher.firstName + ' ' + c.teacher.lastName : 'Brak'}"></td>
+                <td th:text="${#lists.size(c.students)}"></td>
                 <td>
-                    <a th:href="@{/students(classId=${c.id})}">Pokaż uczniów w tej klasie</a>
+                    <a th:href="@{/students(classId=${c.id})}">Pokaż uczniów</a> | 
+                    <a th:href="@{/classes/edit/{id}(id=${c.id})}">Edytuj</a>
                 </td>
             </tr>
             <tr th:if="${#lists.isEmpty(classes)}">
-                <td colspan="3">Brak klas w bazie.</td>
+                <td colspan="5">Brak klas w bazie.</td>
             </tr>
         </tbody>
     </table>

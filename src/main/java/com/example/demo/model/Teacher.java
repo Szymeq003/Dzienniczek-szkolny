@@ -33,4 +33,7 @@ public class Teacher {
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subject> subjects = new ArrayList<>();
+
+    @OneToMany(mappedBy = "teacher")
+    private List<SchoolClass> schoolClasses = new ArrayList<>();
 }
