@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edytuj Przedmiot</title>
+</head>
+
+<body>
+
+    <nav>
+        <a th:href="@{/}">Nauczyciele</a> |
+        <a th:href="@{/students}">Uczniowie</a> |
+        <a th:href="@{/classes}">Klasy</a> |
+        <a th:href="@{/subjects}">Przedmioty</a>
+    </nav>
+    <hr />
+
+    <h1>Edytuj Przedmiot</h1>
+
+    <form th:action="@{/subjects/edit/{id}(id=${subject.id})}" method="post" th:object="${subject}">
+        <label>Nazwa przedmiotu: <input type="text" th:field="*{name}" required /></label><br />
+
+        <label>Nauczyciel:
+            <select th:field="*{teacher}">
+                <option value="">-- Brak nauczyciela --</option>
+                <option th:each="t : ${teachers}" th:value="${t.id}" th:text="|${t.firstName} ${t.lastName}|"></option>
+            </select>
+        </label><br />
+
+        <button type="submit">Zapisz zmiany</button>
+    </form>
+
+    <br />
+    <a th:href="@{/subjects}">Powrót do listy przedmiotów</a>
+
+</body>
+
+</html>

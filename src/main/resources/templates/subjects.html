@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Przedmiotów</title>
+</head>
+
+<body>
+
+    <nav>
+        <a th:href="@{/}">Nauczyciele</a> |
+        <a th:href="@{/students}">Uczniowie</a> |
+        <a th:href="@{/classes}">Klasy</a> |
+        <a th:href="@{/subjects}">Przedmioty</a>
+    </nav>
+    <hr />
+
+    <h1>Lista Przedmiotów</h1>
+
+    <a th:href="@{/subjects/add}"><button>Dodaj Nowy Przedmiot</button></a>
+    <br /><br />
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nazwa Przedmiotu</th>
+                <th>Nauczyciel</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="s : ${subjects}">
+                <td th:text="${s.id}"></td>
+                <td th:text="${s.name}"></td>
+                <td th:text="${s.teacher != null ? s.teacher.firstName + ' ' + s.teacher.lastName : 'Brak'}"></td>
+                <td>
+                    <a th:href="@{/subjects/edit/{id}(id=${s.id})}">Edytuj</a> |
+                    <a th:href="@{/subjects/delete/{id}(id=${s.id})}"
+                       onclick="return confirm('Czy na pewno chcesz usunąć ten przedmiot?');">Usuń</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(subjects)}">
+                <td colspan="4">Brak przedmiotów w bazie.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>
