@@ -7,6 +7,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
@@ -24,154 +27,128 @@ public class DataLoader implements CommandLineRunner {
             return;
         }
 
-        Teacher t1 = new Teacher();
-        t1.setFirstName("Anna");
-        t1.setLastName("Kowalska");
-        t1.setEmail("a.kowalska@szkola.pl");
-        teacherRepository.save(t1);
+        Random r = new Random(42);
 
-        Teacher t2 = new Teacher();
-        t2.setFirstName("Tomasz");
-        t2.setLastName("Nowak");
-        t2.setEmail("t.nowak@szkola.pl");
-        teacherRepository.save(t2);
+        String[] firstNamesM = { "Jan", "Piotr", "Tomasz", "Krzysztof", "Michal", "Maciej", "Dawid", "Kamil", "Filip",
+                "Szymon", "Marek", "Pawel", "Robert", "Grzegorz", "Lukasz", "Marcin" };
+        String[] firstNamesF = { "Anna", "Maria", "Katarzyna", "Malgorzata", "Agnieszka", "Barbara", "Ewa", "Krystyna",
+                "Joanna", "Monika", "Izabela", "Magdalena", "Beata", "Dorota", "Halina" };
+        String[] lastNames = { "Nowak", "Kowalski", "Wisniewski", "Wojcik", "Kowalczyk", "Kaminski", "Lewandowski",
+                "Zielinski", "Szymanski", "Wozniak", "Dabrowski", "Kozlowski", "Jankowski", "Mazur", "Krawczyk",
+                "Kaczmarek", "Piotrowski", "Grabowski", "Zajac", "Pawlowski", "Michalski", "Nowicki", "Adamczyk",
+                "Dudek", "Zwiec", "Wieczorek", "Mroz", "Stepien", "Olszewski", "Jaworski", "Maliszewski", "Gajewski" };
 
-        Teacher t3 = new Teacher();
-        t3.setFirstName("Maria");
-        t3.setLastName("Wisniewska");
-        t3.setEmail("m.wisniewska@szkola.pl");
-        teacherRepository.save(t3);
+        List<Teacher> teachers = new ArrayList<>();
+        int tCount = 0;
+        while (tCount < 30) {
+            boolean isMale = r.nextBoolean();
+            String fName = isMale ? firstNamesM[r.nextInt(firstNamesM.length)]
+                    : firstNamesF[r.nextInt(firstNamesF.length)];
+            String lName = lastNames[r.nextInt(lastNames.length)];
+            if (!isMale && lName.endsWith("i")) {
+                lName = lName.substring(0, lName.length() - 1) + "a";
+            }
+            Teacher t = new Teacher();
+            t.setFirstName(fName);
+            t.setLastName(lName);
+            t.setEmail((fName.substring(0, 1) + "." + lName + tCount + "@szkola.pl").toLowerCase().replace(" ", ""));
+            teachers.add(teacherRepository.save(t));
+            tCount++;
+        }
 
-        Teacher t4 = new Teacher();
-        t4.setFirstName("Jan");
-        t4.setLastName("Zielinski");
-        t4.setEmail("j.zielinski@szkola.pl");
-        teacherRepository.save(t4);
+        List<Subject> subjects = new ArrayList<>();
 
-        Subject s1 = new Subject();
-        s1.setName("Matematyka");
-        s1.setTeacher(t1);
-        subjectRepository.save(s1);
+        addSubject(subjects, "Historia", teachers.get(0));
+        addSubject(subjects, "WOS", teachers.get(0));
 
-        Subject s2 = new Subject();
-        s2.setName("Jezyk polski");
-        s2.setTeacher(t2);
-        subjectRepository.save(s2);
+        addSubject(subjects, "Matematyka", teachers.get(1));
+        addSubject(subjects, "Informatyka", teachers.get(1));
 
-        Subject s3 = new Subject();
-        s3.setName("Fizyka");
-        s3.setTeacher(t3);
-        subjectRepository.save(s3);
+        addSubject(subjects, "Matematyka", teachers.get(2));
+        addSubject(subjects, "Fizyka", teachers.get(2));
 
-        Subject s4 = new Subject();
-        s4.setName("Informatyka");
-        s4.setTeacher(t4);
-        subjectRepository.save(s4);
+        addSubject(subjects, "J. polski", teachers.get(3));
+        addSubject(subjects, "Historia", teachers.get(3));
 
-        Subject s5 = new Subject();
-        s5.setName("Historia");
-        s5.setTeacher(t2);
-        subjectRepository.save(s5);
+        String[] standardSubjects = { "Biologia", "Chemia", "Geografia", "Wychowanie fizyczne", "J. angielski",
+                "J. niemiecki", "Muzyka", "Plastyka", "Technika", "EDB", "Religia" };
+        for (int i = 4; i < 30; i++) {
+            String subjName = standardSubjects[i % standardSubjects.length];
+            addSubject(subjects, subjName, teachers.get(i));
+        }
 
-        SchoolClass class3A = schoolClassRepository.findByName("3A").orElseGet(() -> {
+        List<SchoolClass> schoolClasses = new ArrayList<>();
+        String[] classNames = { "1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A" };
+        for (int i = 0; i < classNames.length; i++) {
             SchoolClass c = new SchoolClass();
-            c.setName("3A");
-            return schoolClassRepository.save(c);
-        });
+            c.setName(classNames[i]);
+            c.setTeacher(teachers.get(i % teachers.size()));
+            schoolClasses.add(schoolClassRepository.save(c));
+        }
 
-        SchoolClass class3B = schoolClassRepository.findByName("3B").orElseGet(() -> {
-            SchoolClass c = new SchoolClass();
-            c.setName("3B");
-            return schoolClassRepository.save(c);
-        });
+        List<Student> students = new ArrayList<>();
+        for (SchoolClass sc : schoolClasses) {
+            for (int i = 0; i < 30; i++) {
+                boolean isMale = r.nextBoolean();
+                String fName = isMale ? firstNamesM[r.nextInt(firstNamesM.length)]
+                        : firstNamesF[r.nextInt(firstNamesF.length)];
+                String lName = lastNames[r.nextInt(lastNames.length)];
+                if (!isMale && lName.endsWith("i")) {
+                    lName = lName.substring(0, lName.length() - 1) + "a";
+                }
+                Student st = new Student();
+                st.setFirstName(fName);
+                st.setLastName(lName);
+                st.setSchoolClass(sc);
+                String unq = String.valueOf(r.nextInt(100) + students.size());
+                st.setEmail((fName.substring(0, 1) + "." + lName + unq + "@uczen.pl").toLowerCase().replace(" ", ""));
+                students.add(studentRepository.save(st));
+            }
+        }
 
-        SchoolClass class2A = schoolClassRepository.findByName("2A").orElseGet(() -> {
-            SchoolClass c = new SchoolClass();
-            c.setName("2A");
-            return schoolClassRepository.save(c);
-        });
+        java.util.Map<String, List<Subject>> groupedSubjects = new java.util.HashMap<>();
+        for (Subject s : subjects) {
+            groupedSubjects.computeIfAbsent(s.getName(), k -> new ArrayList<>()).add(s);
+        }
 
-        Student st1 = new Student();
-        st1.setFirstName("Jakub");
-        st1.setLastName("Lewandowski");
-        st1.setSchoolClass(class3A);
-        st1.setEmail("j.lewandowski@uczen.pl");
-        studentRepository.save(st1);
+        String[] gradesScale = { "1", "1+", "2-", "2", "2+", "3-", "3", "3+", "4-", "4", "4+", "5-", "5", "5+", "6-",
+                "6" };
+        for (Student st : students) {
+            List<Grade> studentGrades = new ArrayList<>();
+            List<Subject> studentEnrolledSubjects = new ArrayList<>();
+            for (List<Subject> variants : groupedSubjects.values()) {
+                studentEnrolledSubjects.add(variants.get(r.nextInt(variants.size())));
+            }
 
-        Student st2 = new Student();
-        st2.setFirstName("Maja");
-        st2.setLastName("Kaminska");
-        st2.setSchoolClass(class3A);
-        st2.setEmail("m.kaminska@uczen.pl");
-        studentRepository.save(st2);
+            for (Subject sub : studentEnrolledSubjects) {
+                int gradesCount = 10 + r.nextInt(4);
+                for (int k = 0; k < gradesCount; k++) {
+                    String val = gradesScale[r.nextInt(gradesScale.length)];
+                    LocalDate date = LocalDate.of(2026, 1 + r.nextInt(6), 1 + r.nextInt(28));
+                    Grade grade = new Grade();
+                    grade.setStudent(st);
+                    grade.setSubject(sub);
+                    grade.setValue(val);
+                    grade.setDate(date);
+                    studentGrades.add(grade);
+                }
+            }
+            gradeRepository.saveAll(studentGrades);
+        }
 
-        Student st3 = new Student();
-        st3.setFirstName("Piotr");
-        st3.setLastName("Wozniak");
-        st3.setSchoolClass(class3B);
-        st3.setEmail("p.wozniak@uczen.pl");
-        studentRepository.save(st3);
-
-        Student st4 = new Student();
-        st4.setFirstName("Aleksandra");
-        st4.setLastName("Dabrowska");
-        st4.setSchoolClass(class3B);
-        st4.setEmail("a.dabrowska@uczen.pl");
-        studentRepository.save(st4);
-
-        Student st5 = new Student();
-        st5.setFirstName("Krzysztof");
-        st5.setLastName("Szymanski");
-        st5.setSchoolClass(class2A);
-        st5.setEmail("k.szymanski@uczen.pl");
-        studentRepository.save(st5);
-
-        Student st6 = new Student();
-        st6.setFirstName("Natalia");
-        st6.setLastName("Wojciechowska");
-        st6.setSchoolClass(class2A);
-        st6.setEmail("n.wojciechowska@uczen.pl");
-        studentRepository.save(st6);
-
-        addGrade(st1, s1, 5, LocalDate.of(2026, 2, 10));
-        addGrade(st1, s2, 4, LocalDate.of(2026, 2, 12));
-        addGrade(st1, s3, 3, LocalDate.of(2026, 2, 15));
-        addGrade(st1, s4, 6, LocalDate.of(2026, 2, 20));
-
-        addGrade(st2, s1, 4, LocalDate.of(2026, 2, 10));
-        addGrade(st2, s2, 5, LocalDate.of(2026, 2, 12));
-        addGrade(st2, s3, 4, LocalDate.of(2026, 2, 15));
-        addGrade(st2, s5, 5, LocalDate.of(2026, 2, 18));
-
-        addGrade(st3, s1, 2, LocalDate.of(2026, 2, 10));
-        addGrade(st3, s2, 3, LocalDate.of(2026, 2, 12));
-        addGrade(st3, s4, 4, LocalDate.of(2026, 2, 22));
-
-        addGrade(st4, s1, 5, LocalDate.of(2026, 2, 10));
-        addGrade(st4, s3, 5, LocalDate.of(2026, 2, 15));
-        addGrade(st4, s5, 6, LocalDate.of(2026, 2, 18));
-
-        addGrade(st5, s1, 3, LocalDate.of(2026, 3, 1));
-        addGrade(st5, s2, 4, LocalDate.of(2026, 3, 2));
-        addGrade(st5, s4, 5, LocalDate.of(2026, 3, 3));
-
-        addGrade(st6, s1, 4, LocalDate.of(2026, 3, 1));
-        addGrade(st6, s2, 2, LocalDate.of(2026, 3, 2));
-        addGrade(st6, s3, 3, LocalDate.of(2026, 3, 3));
-
-        System.out.println("=== Zaladowano przykladowe dane! ===");
-        System.out.println("Teachers (Nauczyciele): " + teacherRepository.count());
-        System.out.println("Subjects (Przedmioty): " + subjectRepository.count());
-        System.out.println("Students (Uczniowie): " + studentRepository.count());
-        System.out.println("Grades (Oceny): " + gradeRepository.count());
+        System.out.println("\n============ DATA LOADER V3 (OGROMNY) ============");
+        System.out.println("Nauczyciele docelowi:    " + teacherRepository.count() + " / 30");
+        System.out.println("Klasy uczniowskie:       " + schoolClassRepository.count());
+        System.out.println("Karty Przedmiotow:       " + subjectRepository.count());
+        System.out.println("Laczna baza Uczniow:     " + studentRepository.count() + " ucz.");
+        System.out.println("Wszystkie Oceny systemu: " + gradeRepository.count());
+        System.out.println("==================================================\n");
     }
 
-    private void addGrade(Student student, Subject subject, int value, LocalDate date) {
-        Grade grade = new Grade();
-        grade.setStudent(student);
-        grade.setSubject(subject);
-        grade.setValue(value);
-        grade.setDate(date);
-        gradeRepository.save(grade);
+    private void addSubject(List<Subject> list, String name, Teacher teacher) {
+        Subject s = new Subject();
+        s.setName(name);
+        s.setTeacher(teacher);
+        list.add(subjectRepository.save(s));
     }
 }

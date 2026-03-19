@@ -1,0 +1,163 @@
+package com.example.demo.controller;
+
+import com.example.demo.model.Grade;
+import com.example.demo.model.Student;
+import com.example.demo.model.Subject;
+import com.example.demo.service.GradeService;
+import com.example.demo.service.StudentService;
+import com.example.demo.service.SubjectService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Controller
+@RequestMapping("/grades")
+@RequiredArgsConstructor
+public class GradeController {
+
+    private final GradeService gradeService;
+    private final StudentService studentService;
+    private final SubjectService subjectService;
+
+    @lombok.Data
+    @lombok.AllArgsConstructor
+    public static class SubjectSummary {
+        private Subject subject;
+        private String teacherInitials;
+        private List<Grade> grades;
+        private double average;
+    }
+
+    @GetMapping("/student/{studentId}")
+    public String viewSubjectsForStudent(@PathVariable Long studentId, Model model) {
+        Student student = studentService.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid student Id:" + studentId));
+
+        List<Subject> allSubjects = subjectService.findAll();
+        List<Grade> studentGrades = gradeService.findByStudentId(studentId);
+
+        java.util.Set<Long> takenSubjectIds = studentGrades.stream()
+                .map(g -> g.getSubject().getId())
+                .collect(java.util.stream.Collectors.toSet());
+
+        java.util.Set<String> takenSubjectNames = studentGrades.stream()
+                .map(g -> g.getSubject().getName())
+                .collect(java.util.stream.Collectors.toSet());
+
+        java.util.List<SubjectSummary> summaries = new java.util.ArrayList<>();
+
+        for (Subject sub : allSubjects) {
+            if (!takenSubjectIds.contains(sub.getId()) && takenSubjectNames.contains(sub.getName())) {
+                continue;
+            }
+
+            java.util.List<Grade> gradesForSubject = studentGrades.stream()
+                    .filter(g -> g.getSubject().getId().equals(sub.getId()))
+                    .collect(java.util.stream.Collectors.toList());
+
+            double avg = 0.0;
+            if (!gradesForSubject.isEmpty()) {
+                double sum = 0.0;
+                for (Grade g : gradesForSubject) {
+                    sum += g.getNumericValue();
+                }
+                avg = sum / gradesForSubject.size();
+            }
+
+            String initials = sub.getTeacher().getFirstName().charAt(0) + "." + sub.getTeacher().getLastName().charAt(0)
+                    + ".";
+            summaries.add(new SubjectSummary(sub, initials, gradesForSubject, avg));
+        }
+
+        model.addAttribute("student", student);
+        model.addAttribute("summaries", summaries);
+        return "student_subjects";
+    }
+
+    @GetMapping("/student/{studentId}/subject/{subjectId}")
+    public String viewGradesForSubject(@PathVariable Long studentId, @PathVariable Long subjectId, Model model) {
+        Student student = studentService.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid student Id:" + studentId));
+        Subject subject = subjectService.findById(subjectId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid subject Id:" + subjectId));
+
+        List<Grade> grades = gradeService.findByStudentIdAndSubjectId(studentId, subjectId);
+
+        double average = 0.0;
+        if (!grades.isEmpty()) {
+            double sum = 0.0;
+            for (Grade g : grades) {
+                sum += g.getNumericValue();
+            }
+            average = sum / grades.size();
+        }
+
+        Grade newGrade = new Grade();
+        newGrade.setStudent(student);
+        newGrade.setSubject(subject);
+        newGrade.setDate(LocalDate.now());
+
+        model.addAttribute("student", student);
+        model.addAttribute("subject", subject);
+        model.addAttribute("grades", grades);
+        model.addAttribute("average", average);
+        model.addAttribute("newGrade", newGrade);
+
+        return "student_grades";
+    }
+
+    @PostMapping("/add")
+    public String addGrade(@ModelAttribute Grade newGrade, @RequestParam("studentId") Long studentId,
+            @RequestParam("subjectId") Long subjectId) {
+        Student student = studentService.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid student Id:" + studentId));
+        Subject subject = subjectService.findById(subjectId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid subject Id:" + subjectId));
+
+        newGrade.setStudent(student);
+        newGrade.setSubject(subject);
+
+        if (newGrade.getDate() == null) {
+            newGrade.setDate(LocalDate.now());
+        }
+
+        gradeService.save(newGrade);
+        return "redirect:/grades/student/" + studentId + "/subject/" + subjectId;
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Grade grade = gradeService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid grade Id:" + id));
+        model.addAttribute("grade", grade);
+        return "edit_grade";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String updateGrade(@PathVariable Long id, @ModelAttribute Grade updatedGrade) {
+        Grade existingGrade = gradeService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid grade Id:" + id));
+
+        existingGrade.setValue(updatedGrade.getValue());
+        existingGrade.setDate(updatedGrade.getDate());
+
+        gradeService.save(existingGrade);
+        return "redirect:/grades/student/" + existingGrade.getStudent().getId() + "/subject/"
+                + existingGrade.getSubject().getId();
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteGrade(@PathVariable Long id) {
+        Grade grade = gradeService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid grade Id:" + id));
+        Long studentId = grade.getStudent().getId();
+        Long subjectId = grade.getSubject().getId();
+
+        gradeService.delete(id);
+        return "redirect:/grades/student/" + studentId + "/subject/" + subjectId;
+    }
+}

@@ -36,4 +36,8 @@ public class GradeService {
     public List<Grade> findBySubjectId(Long subjectId) {
         return gradeRepository.findBySubjectId(subjectId);
     }
+    public List<Grade> findByStudentIdAndSubjectId(Long studentId, Long subjectId) {
+        return gradeRepository.findByStudentIdAndSubjectId(studentId, subjectId);
+    }
+
 }

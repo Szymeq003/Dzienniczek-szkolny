@@ -9,7 +9,7 @@
 <body>
 
     <nav>
-        <a th:href="@{/}">Nauczyciele</a> | 
+        <a th:href="@{/teachers}">Nauczyciele</a> | 
         <a th:href="@{/students}">Uczniowie</a> | 
         <a th:href="@{/students/add}">Dodaj Ucznia</a> | 
         <a th:href="@{/classes}">Klasy</a> |
@@ -56,6 +56,7 @@
                 <td th:text="${s.email}"></td>
                 <td th:text="${s.schoolClass != null ? s.schoolClass.name : 'Brak klasy'}"></td>
                 <td>
+                    <a th:href="@{/grades/student/{id}(id=${s.id})}">Oceny</a> | 
                     <a th:href="@{/students/edit/{id}(id=${s.id})}">Edytuj</a> |
                     <a th:href="@{/students/delete/{id}(id=${s.id})}"
                         onclick="return confirm('Czy na pewno chcesz usunąć tego ucznia?');">Usuń</a>
