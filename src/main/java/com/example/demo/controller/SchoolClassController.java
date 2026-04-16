@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/classes")
+@RequestMapping("/admin/classes")
 @RequiredArgsConstructor
 public class SchoolClassController {
 
@@ -36,7 +36,7 @@ public class SchoolClassController {
     @PostMapping("/add")
     public String addClass(@ModelAttribute SchoolClass newClass) {
         schoolClassRepository.save(newClass);
-        return "redirect:/classes";
+        return "redirect:/admin/classes";
     }
 
     @GetMapping("/edit/{id}")
@@ -52,6 +52,6 @@ public class SchoolClassController {
     public String updateClass(@PathVariable Long id, @ModelAttribute SchoolClass schoolClass) {
         schoolClass.setId(id);
         schoolClassRepository.save(schoolClass);
-        return "redirect:/classes";
+        return "redirect:/admin/classes";
     }
 }

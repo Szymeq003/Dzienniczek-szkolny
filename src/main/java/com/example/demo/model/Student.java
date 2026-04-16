@@ -28,7 +28,7 @@ public class Student {
     @Size(min = 2, max = 50)
     private String lastName;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "school_class_id")
     private SchoolClass schoolClass;
 

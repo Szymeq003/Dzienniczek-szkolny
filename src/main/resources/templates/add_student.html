@@ -1,36 +1,39 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
-    <title>Dodaj Ucznia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodaj Ucznia - Admin</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
-
 <body>
+    <div class="container" style="padding: 3rem 0; max-width: 600px;">
+        <a href="/admin/students" class="btn btn-ghost" style="margin-bottom: 2rem;">← Powrót do listy</a>
 
-    <nav>
-        <a th:href="@{/teachers}">Nauczyciele</a> | 
-        <a th:href="@{/students}">Uczniowie</a> | 
-        <a th:href="@{/students/add}">Dodaj Ucznia</a> | 
-        <a th:href="@{/classes}">Klasy</a> |
-        <a th:href="@{/subjects}">Przedmioty</a>
-    </nav>
-    <hr />
+        <div class="card">
+            <h1 style="margin-bottom: 0.5rem;">Dodaj Nowego Ucznia</h1>
+            <p class="text-muted mb-4">Wypełnij dane, aby utworzyć konto ucznia.</p>
 
-    <h1>Dodaj Ucznia</h1>
-
-    <form th:action="@{/students/add}" method="post" th:object="${newStudent}">
-        <label>Imię: <input type="text" th:field="*{firstName}" /></label><br />
-        <label>Nazwisko: <input type="text" th:field="*{lastName}" /></label><br />
-        <label>Email: <input type="text" th:field="*{email}" /></label><br />
-        <label>Klasa:
-            <select th:field="*{schoolClass}">
-                <option th:each="c : ${schoolClasses}" th:value="${c.id}" th:text="${c.name}"></option>
-            </select>
-        </label><br />
-        <button type="submit">Zapisz ucznia</button>
-    </form>
-
+            <form th:action="@{/admin/students/add}" method="post" th:object="${newStudent}">
+                <div class="form-group">
+                    <label>Imię</label>
+                    <input type="text" class="input-control" th:field="*{firstName}" placeholder="Imię" required/>
+                </div>
+                <div class="form-group">
+                    <label>Nazwisko</label>
+                    <input type="text" class="input-control" th:field="*{lastName}" placeholder="Nazwisko" required/>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="input-control" th:field="*{email}" placeholder="email@szkola.pl" required/>
+                </div>
+                <div class="form-group">
+                    <label>Przypisanie do Klasy</label>
+                    <select class="input-control" th:field="*{schoolClass}">
+                        <option value="">Wybierz klasę...</option>
+                        <option th:each="c : ${schoolClasses}" th:value="${c.id}" th:text="${c.name}"></option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Zapisz Ucznia</button>
+            </form>
+        </div>
+    </div>
 </body>
-
-</html>

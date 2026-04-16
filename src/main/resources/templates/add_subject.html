@@ -1,39 +1,33 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
-    <title>Dodaj Przedmiot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodaj Przedmiot - Admin</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
-
 <body>
+    <div class="container" style="padding: 3rem 0; max-width: 600px;">
+        <a href="/admin/subjects" class="btn btn-ghost" style="margin-bottom: 2rem;">← Powrót do listy</a>
 
-    <nav>
-        <a th:href="@{/teachers}">Nauczyciele</a> |
-        <a th:href="@{/students}">Uczniowie</a> |
-        <a th:href="@{/classes}">Klasy</a> |
-        <a th:href="@{/subjects}">Przedmioty</a>
-    </nav>
-    <hr />
+        <div class="card">
+            <h1 style="margin-bottom: 0.5rem;">Dodaj Nowy Przedmiot</h1>
+            <p class="text-muted mb-4">Zdefiniuj przedmiot oraz przypisz nauczyciela prowadzącego.</p>
 
-    <h1>Dodaj Przedmiot</h1>
-
-    <form th:action="@{/subjects/add}" method="post" th:object="${newSubject}">
-        <label>Nazwa przedmiotu: <input type="text" th:field="*{name}" required /></label><br />
-
-        <label>Nauczyciel:
-            <select th:field="*{teacher}">
-                <option value="">-- Brak nauczyciela --</option>
-                <option th:each="t : ${teachers}" th:value="${t.id}" th:text="|${t.firstName} ${t.lastName}|"></option>
-            </select>
-        </label><br />
-
-        <button type="submit">Zapisz przedmiot</button>
-    </form>
-
-    <br />
-    <a th:href="@{/subjects}">Powrót do listy przedmiotów</a>
-
+            <form th:action="@{/admin/subjects/add}" method="post" th:object="${newSubject}">
+                <div class="form-group">
+                    <label>Nazwa Przedmiotu</label>
+                    <input type="text" class="input-control" th:field="*{name}" placeholder="np. Język Angielski" required/>
+                </div>
+                
+                <div class="form-group">
+                    <label>Nauczyciel Prowadzący</label>
+                    <select class="input-control" th:field="*{teacher}">
+                        <option value="">-- Wybierz nauczyciela --</option>
+                        <option th:each="t : ${teachers}" th:value="${t.id}" th:text="|${t.firstName} ${t.lastName}|"></option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Zapisz Przedmiot</button>
+            </form>
+        </div>
+    </div>
 </body>
-
-</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mój Plan Lekcji - Dzienniczek</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+            align-items: start;
+            margin-top: 2rem;
+        }
+
+        .day-column {
+            background: #ffffff;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            min-height: 500px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .day-column:hover {
+            box-shadow: var(--shadow);
+            border-color: var(--primary-light);
+        }
+
+        .day-header {
+            text-align: center;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary-light);
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.8125rem;
+            letter-spacing: 0.1em;
+        }
+
+        .lesson-card {
+            background: var(--bg-main);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lesson-card:hover {
+            transform: translateX(4px);
+            background: white;
+            box-shadow: var(--shadow);
+        }
+
+        .lesson-time {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .lesson-subject {
+            font-weight: 800;
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9375rem;
+        }
+
+        .lesson-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .meta-item {
+            font-size: 0.8125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .meta-icon {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1200px) {
+            .schedule-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span>Dzienniczek</span>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/teacher/dashboard"><span>Dashboard</span></a></li>
+                <li><a href="/teacher/classes"><span>Moje Klasy</span></a></li>
+                <li><a href="/teacher/schedules" class="active"><span>Plan Lekcji</span></a></li>
+            </ul>
+        </nav>
+        
+        <form th:action="@{/logout}" method="post" style="margin-top: auto;">
+            <button type="submit" class="btn btn-danger" style="width: 100%;">Wyloguj się</button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="welcome-text">
+                <h1>Twój Plan Zajęć</h1>
+                <p class="text-muted">Przeglądaj swój tygodniowy harmonogram lekcji i sal.</p>
+            </div>
+        </div>
+
+        <div class="schedule-grid">
+            <div th:each="day : ${T(java.time.DayOfWeek).values()}" 
+                 th:if="${day.value <= 5}"
+                 class="day-column">
+                
+                <div class="day-header" th:text="${day}">PONIEDZIAŁEK</div>
+
+                <div th:each="s : ${schedules}" th:if="${s.dayOfWeek == day}">
+                    <div class="lesson-card">
+                        <span class="lesson-time" th:text="${s.startTime + ' - ' + s.endTime}">08:00 - 08:45</span>
+                        <span class="lesson-subject" th:text="${s.subject.name}">Matematyka</span>
+                        <div class="lesson-meta">
+                            <div class="meta-item">
+                                <span class="meta-icon">🏫</span>
+                                <span th:text="'Klasa ' + ${s.schoolClass.name}">Klasa 1A</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">📍</span>
+                                <span th:text="${s.room != null ? 'Sala ' + s.room.name : 'Brak sali'}">Sala 102</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(schedules.?[dayOfWeek == __${day}__])}" 
+                     class="text-muted" style="text-align: center; padding: 3rem 0; font-size: 0.8125rem; font-style: italic;">
+                    Brak zajęć
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

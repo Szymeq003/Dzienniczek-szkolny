@@ -2,33 +2,51 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Logowanie do Dzienniczka</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie - Dzienniczek Szkolny</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        body {
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(2, 132, 199, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.05) 0px, transparent 50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+        }
+        .logo-area { text-align: center; margin-bottom: 2.5rem; }
+        .logo-area h1 { color: var(--primary); margin-bottom: 0.5rem; }
+        .logo-area p { color: var(--text-muted); font-size: 0.875rem; }
+    </style>
 </head>
-<body style="font-family: sans-serif; background-color: #f4f6f9;">
+<body>
 
-    <nav style="text-align: center; margin-top: 20px;">
-        <a th:href="@{/teachers}">Nauczyciele</a> | 
-        <a th:href="@{/students}">Uczniowie</a> | 
-        <a th:href="@{/classes}">Klasy</a>
-    </nav>
-    <hr style="margin-bottom: 50px;"/>
+    <div class="card login-card">
+        <div class="logo-area">
+            <h1>E-Dzienniczek</h1>
+            <p>Witaj z powrotem! Zaloguj się do systemu.</p>
+        </div>
 
-    <div style="max-width: 400px; margin: 0 auto; background: white; border: 1px solid #ddd; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <h2 style="text-align: center; color: #333; margin-top: 0;">Dzienniczek Szkolny</h2>
-        <h3 style="text-align: center; color: #666; font-weight: normal; margin-bottom: 30px;">Zaloguj się</h3>
+        <div th:if="${param.error}" class="error-msg" style="background: #fef2f2; color: #ef4444; padding: 0.75rem; border-radius: 0.75rem; font-size: 0.875rem; text-align: center; margin-bottom: 1.5rem; border: 1px solid #fee2e2;">
+            Niepoprawny login lub hasło.
+        </div>
+
         <form th:action="@{/login}" method="post">
-            <div style="margin-bottom: 15px;">
-                <label style="display:block; margin-bottom: 5px; color: #555;">Konto Administratora:</label>
-                <input type="text" name="username" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" required autofocus placeholder="Nazwa użytkownika" />
+            <div class="form-group">
+                <label for="username">Login</label>
+                <input type="text" id="username" name="username" class="input-control" placeholder="Twój login" required autofocus />
             </div>
-            <div style="margin-bottom: 25px;">
-                <label style="display:block; margin-bottom: 5px; color: #555;">Hasło:</label>
-                <input type="password" name="password" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" required placeholder="Hasło" />
+            
+            <div class="form-group">
+                <label for="password">Hasło</label>
+                <input type="password" id="password" name="password" class="input-control" placeholder="••••••••" required />
             </div>
-            <div th:if="${param.error}" style="color: #d9534f; font-size: 0.85em; text-align: center; margin-bottom: 20px;">
-                Błędna nazwa użytkownika lub hasło.
-            </div>
-            <button type="submit" style="width: 100%; padding: 10px; background-color: #5bc0de; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">Zaloguj się</button>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Zaloguj się</button>
         </form>
     </div>
 

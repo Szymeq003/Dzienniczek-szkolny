@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administratora - Dzienniczek</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .admin-card { display: flex; align-items: center; gap: 1.5rem; }
+        .icon-box { width: 64px; height: 64px; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .bg-blue { background: #e0f2fe; color: #0284c7; }
+        .bg-emerald { background: #ecfdf5; color: #059669; }
+        .bg-amber { background: #fffbeb; color: #f59e0b; }
+        .bg-purple { background: #f5f3ff; color: #7c3aed; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span>Dzienniczek Admin</span>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/admin" class="active">Dashboard</a></li>
+                <li><a href="/admin/teachers">Nauczyciele</a></li>
+                <li><a href="/admin/students">Uczniowie</a></li>
+                <li><a href="/admin/classes">Klasy</a></li>
+                <li><a href="/admin/subjects">Przedmioty</a></li>
+                <li><a href="/admin/rooms">Sale</a></li>
+            </ul>
+        </nav>
+        <form th:action="@{/logout}" method="post" style="margin-top: auto;">
+            <button type="submit" class="btn btn-danger" style="width: 100%;">Wyloguj</button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <h1 style="font-size: 3rem;">Witaj, Administratorze!</h1>
+            <p class="text-muted">Centrum zarządzania Twoją szkołą.</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Teachers -->
+            <a href="/admin/teachers" class="card admin-card">
+                <div class="icon-box bg-blue">👨‍🏫</div>
+                <div>
+                    <h2 th:text="${teacherCount}">0</h2>
+                    <p class="text-muted">Nauczycieli</p>
+                </div>
+            </a>
+
+            <!-- Students -->
+            <a href="/admin/students" class="card admin-card">
+                <div class="icon-box bg-emerald">👨‍🎓</div>
+                <div>
+                    <h2 th:text="${studentCount}">0</h2>
+                    <p class="text-muted">Uczniów</p>
+                </div>
+            </a>
+
+            <!-- Classes -->
+            <a href="/admin/classes" class="card admin-card">
+                <div class="icon-box bg-purple">🏫</div>
+                <div>
+                    <h2 th:text="${classCount}">0</h2>
+                    <p class="text-muted">Klas szkolnych</p>
+                </div>
+            </a>
+
+            <!-- Subjects -->
+            <a href="/admin/subjects" class="card admin-card">
+                <div class="icon-box bg-amber">📚</div>
+                <div>
+                    <h2 th:text="${subjectCount}">0</h2>
+                    <p class="text-muted">Przedmiotów</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="card mt-4">
+            <h3>Szybki Start</h3>
+            <p class="text-muted mb-4">Wybierz sekcję po lewej lub skorzystaj ze skrótów powyżej, aby zarządzać danymi.</p>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/admin/students/add" class="btn btn-primary">+ Dodaj Ucznia</a>
+                <a href="/admin/teachers" class="btn btn-ghost">Lista Nauczycieli</a>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

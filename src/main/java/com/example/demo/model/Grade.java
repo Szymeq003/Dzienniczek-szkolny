@@ -6,7 +6,10 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "grades")
+@Table(name = "grades", indexes = {
+    @Index(name = "idx_grade_student", columnList = "student_id"),
+    @Index(name = "idx_grade_subject", columnList = "subject_id")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,11 +49,11 @@ public class Grade {
     @Column(name = "date")
     private LocalDate date = LocalDate.now();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private Student student;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_id")
     private Subject subject;
 }

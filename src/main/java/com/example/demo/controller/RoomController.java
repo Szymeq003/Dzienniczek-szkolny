@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/rooms")
+@RequestMapping("/admin/rooms")
 @RequiredArgsConstructor
 public class RoomController {
 
@@ -24,7 +24,7 @@ public class RoomController {
     @PostMapping("/add")
     public String addRoom(@ModelAttribute Room newRoom) {
         roomService.save(newRoom);
-        return "redirect:/rooms";
+        return "redirect:/admin/rooms";
     }
 
     @GetMapping("/edit/{id}")
@@ -39,12 +39,12 @@ public class RoomController {
     public String updateRoom(@PathVariable Long id, @ModelAttribute Room room) {
         room.setId(id);
         roomService.save(room);
-        return "redirect:/rooms";
+        return "redirect:/admin/rooms";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteRoom(@PathVariable Long id) {
         roomService.delete(id);
-        return "redirect:/rooms";
+        return "redirect:/admin/rooms";
     }
 }

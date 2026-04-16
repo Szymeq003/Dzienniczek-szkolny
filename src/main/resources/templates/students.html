@@ -1,74 +1,73 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
-    <title>Panel Uczniowie</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uczniowie - Zarządzanie</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
-
 <body>
+    <div class="container" style="padding: 3rem 0;">
+        <a href="/admin" class="btn btn-ghost" style="margin-bottom: 2rem;">← Powrót do panelu admina</a>
 
-    <nav>
-        <a th:href="@{/teachers}">Nauczyciele</a> | 
-        <a th:href="@{/students}">Uczniowie</a> | 
-        <a th:href="@{/students/add}">Dodaj Ucznia</a> | 
-        <a th:href="@{/classes}">Klasy</a> |
-        <a th:href="@{/subjects}">Przedmioty</a>
-    </nav>
-    <hr />
+        <div class="header" style="margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <h1>Zarządzanie Uczniami</h1>
+                <p class="text-muted">Przeglądaj, filtruj i edytuj dane uczniów.</p>
+            </div>
+            <a th:href="@{/admin/students/add}" class="btn btn-primary">+ Dodaj Ucznia</a>
+        </div>
 
-    <h1>Uczniowie w bazie (Filtrowanie)</h1>
+        <div class="card mb-4">
+            <h3 style="margin-bottom: 1.5rem;">Filtrowanie</h3>
+            <form th:action="@{/admin/students}" method="get" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Wyszukaj (Imię/Nazwisko)</label>
+                    <input type="text" name="search" class="input-control" th:value="${searchQuery}" placeholder="Wpisz imię lub nazwisko..." />
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Klasa</label>
+                    <select name="classId" class="input-control">
+                        <option value="">Wszystkie klasy</option>
+                        <option th:each="c : ${schoolClasses}" th:value="${c.id}" th:text="${c.name}"
+                            th:selected="${c.id == selectedClassId}">
+                        </option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="submit" class="btn btn-primary">Szukaj</button>
+                    <a th:href="@{/admin/students}" class="btn btn-ghost">Wyczyść</a>
+                </div>
+            </form>
+        </div>
 
-    <form th:action="@{/students}" method="get">
-        <label>Wyszukaj (Imię/Nazwisko):
-            <input type="text" name="search" th:value="${searchQuery}" placeholder="Wpisz imię lub nazwisko..." />
-        </label>
-        <label>Filtrowanie klas:
-            <select name="classId">
-                <option value="">Wszystkie klasy</option>
-                <option th:each="c : ${schoolClasses}" th:value="${c.id}" th:text="${c.name}"
-                    th:selected="${c.id == selectedClassId}">
-                </option>
-            </select>
-        </label>
-        <button type="submit">Szukaj</button>
-        <a th:href="@{/students}"><button type="button">Wyczyść</button></a>
-    </form>
-
-    <br />
-
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Imię</th>
-                <th>Nazwisko</th>
-                <th>Email</th>
-                <th>Klasa</th>
-                <th>Akcje</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="s : ${students}">
-                <td th:text="${s.id}"></td>
-                <td th:text="${s.firstName}"></td>
-                <td th:text="${s.lastName}"></td>
-                <td th:text="${s.email}"></td>
-                <td th:text="${s.schoolClass != null ? s.schoolClass.name : 'Brak klasy'}"></td>
-                <td>
-                    <a th:href="@{/grades/student/{id}(id=${s.id})}">Oceny</a> | 
-                    <a th:href="@{/attendance/student/{id}(id=${s.id})}">Frekwencja</a> |
-                    <a th:href="@{/students/edit/{id}(id=${s.id})}">Edytuj</a> |
-                    <a th:href="@{/students/delete/{id}(id=${s.id})}"
-                        onclick="return confirm('Czy na pewno chcesz usunąć tego ucznia?');">Usuń</a>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(students)}">
-                <td colspan="6">Brak uczniów w bazie.</td>
-            </tr>
-        </tbody>
-    </table>
-
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Imię i Nazwisko</th>
+                        <th>Email</th>
+                        <th>Klasa</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="s : ${students}">
+                        <td th:text="${s.id}"></td>
+                        <td style="font-weight: 700;" th:text="${s.firstName} + ' ' + ${s.lastName}"></td>
+                        <td th:text="${s.email}" class="text-muted"></td>
+                        <td>
+                            <span class="badge badge-success" th:text="${s.schoolClass != null ? s.schoolClass.name : 'Brak'}"></span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <a th:href="@{/grades/student/{id}(id=${s.id})}" class="btn btn-ghost" style="padding: 0.4rem 0.8rem;">Oceny</a>
+                                <a th:href="@{/admin/students/edit/{id}(id=${s.id})}" class="btn btn-ghost" style="padding: 0.4rem 0.8rem;">Edytuj</a>
+                                <a th:href="@{/admin/students/delete/{id}(id=${s.id})}" class="btn btn-danger" style="padding: 0.4rem 0.8rem;" onclick="return confirm('Spowoduje to bezpowrotne usunięcie konta ucznia. Kontynuować?');">Usuń</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
-
-</html>

@@ -2,89 +2,104 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Frekwencja Ucznia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frekwencja Ucznia - Dzienniczek</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-    <nav>
-        <a th:href="@{/teachers}">Nauczyciele</a> | 
-        <a th:href="@{/students}">Uczniowie</a> | 
-        <a th:href="@{/classes}">Klasy</a> |
-        <a th:href="@{/subjects}">Przedmioty</a> |
-        <a th:href="@{/rooms}">Sale</a>
-    </nav>
-    <hr />
 
-    <h1 th:text="|Karta Obecności: ${student.firstName} ${student.lastName}|">Frekwencja Ucznia</h1>
-    
-    <div>
-        <h3>Zestawienie Frekwencyjne</h3>
-        <p><strong>Zgodność obecności na zajęciach: </strong> <span th:text="${#numbers.formatDecimal(statPercentage, 1, 2)} + ' %'"></span></p>
-        <ul>
-            <li>Udziałów we wszystkie dniach i podjętych zajęciach: <span th:text="${statTotal}"></span></li>
-            <li>Obecny punktualnie: <strong th:text="${statPresent}"></strong></li>
-            <li>Dotarł ze spóźnieniem: <span th:text="${statLate}"></span></li>
-            <li>Nieobecny - całkowity brak zaliczenia: <strong th:text="${statAbsent}"></strong></li>
-        </ul>
+    <div class="container" style="padding: 3rem 0;">
+        <a href="/teacher/dashboard" class="btn btn-ghost" style="margin-bottom: 2rem;">← Powrót do dashboardu</a>
+
+        <div class="header" style="margin-bottom: 3rem;">
+            <h1 th:text="|Karta Obecności: ${student.firstName} ${student.lastName}|">Frekwencja Ucznia</h1>
+            <p class="text-muted" th:text="'Klasa ' + ${student.schoolClass.name}">Klasa 1A</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start;">
+            <!-- Stats -->
+            <div class="card">
+                <h3 style="margin-bottom: 1.5rem;">Statystyki</h3>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem;" th:text="${#numbers.formatDecimal(statPercentage, 1, 2)} + ' %'"></div>
+                <div class="text-muted" style="font-size: 0.875rem; font-weight: 600; margin-bottom: 1.5rem;">ŁĄCZNA FREKWENCJA</div>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span class="text-muted">Obecności:</span>
+                        <strong th:text="${statPresent}"></strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span class="text-muted">Spóźnienia:</span>
+                        <strong th:text="${statLate}"></strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span class="text-muted">Nieobecności:</span>
+                        <strong style="color: var(--accent-danger);" th:text="${statAbsent}"></strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form & List -->
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <div class="card">
+                    <h3 style="margin-bottom: 1.5rem;">Dodaj wpis do dziennika</h3>
+                    <form th:action="@{/attendance/add}" method="post" th:object="${newAttendance}">
+                        <input type="hidden" name="studentId" th:value="${student.id}" />
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label>Przedmiot</label>
+                                <select name="subjectId" class="input-control" required>
+                                    <option value="" disabled selected>Wybierz przedmiot</option>
+                                    <option th:each="sub : ${subjects}" th:value="${sub.id}" th:text="|${sub.name} (${sub.teacher.lastName})|"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select th:field="*{status}" class="input-control" required>
+                                    <option value="" disabled selected>Ustal status</option>
+                                    <option th:each="st : ${statuses}" th:value="${st}" th:text="${st}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Data zajęć</label>
+                            <input type="date" th:field="*{date}" class="input-control" required />
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Zapisz obecność</button>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Przedmiot</th>
+                                <th>Status</th>
+                                <th>Akcja</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="a : ${attendances}">
+                                <td th:text="${a.date}" style="font-weight: 600;"></td>
+                                <td th:text="|${a.subject.name} (mgr ${a.subject.teacher.lastName})|"></td>
+                                <td>
+                                    <span th:class="|badge ${a.status == 'OBECNY' ? 'badge-success' : (a.status == 'NIEOBECNY' ? 'badge-danger' : 'badge-warning')}|" 
+                                          th:text="${a.status}"
+                                          th:style="${a.status == 'NIEOBECNY' ? 'background: #fee2e2; color: #ef4444; border: 1px solid #fecaca;' : ''}"></span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/attendance/delete/{id}(id=${a.id})}" class="text-danger" style="color: var(--accent-danger); font-size: 0.875rem; font-weight: 600;">Usuń</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- Dodawanie -->
-    <fieldset>
-        <legend>Wpisz frekwencję do e-dziennika</legend>
-        <form th:action="@{/attendance/add}" method="post" th:object="${newAttendance}">
-            <input type="hidden" name="studentId" th:value="${student.id}" />
-            
-            <label>Przedmiot Lekcji: 
-                <select name="subjectId" required>
-                    <option value="" disabled selected>-- Wybierz przedmiot --</option>
-                    <option th:each="sub : ${subjects}" th:value="${sub.id}" th:text="|${sub.name} (${sub.teacher.firstName} ${sub.teacher.lastName})|"></option>
-                </select>
-            </label>
-            <br/><br/>
-            
-            <label>Status (Dzień Bieżący): 
-                <select th:field="*{status}" required>
-                    <option value="" disabled selected>-- Ustal status obecności --</option>
-                    <option th:each="st : ${statuses}" th:value="${st}" th:text="${st}"></option>
-                </select>
-            </label>
-            <br/><br/>
-
-            <label>Odbyto w dniach: 
-                <input type="date" th:field="*{date}" required />
-            </label>
-            <br/><br/>
-            
-            <button type="submit">Podejmij Wpis</button>
-        </form>
-    </fieldset>
-
-    <!-- Lista -->
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Przedmiot</th>
-                <th>Sygnatura Statusu</th>
-                <th>Usuwanie (Akcja)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="a : ${attendances}">
-                <td th:text="${a.date}"></td>
-                <td th:text="|${a.subject.name} (${a.subject.teacher.lastName})|"></td>
-                <td th:text="${a.status}"></td>
-                <td>
-                    <a th:href="@{/attendance/delete/{id}(id=${a.id})}" onclick="return confirm('Spowoduje to bezwarunkowe usunięcie tego logu i manipulację statystykami. Jesteś 100% pewny?');">Usuń wpis</a>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(attendances)}">
-                <td colspan="4">Uczeń nie posiada jeszcze absolutnie żadnej wyrobionej historii na terenie wirtualnej szkoły.</td>
-            </tr>
-        </tbody>
-    </table>
-    <br/>
-    <br/>
-    <a th:href="@{/students}">Powrót do weryfikacji uczniów</a>
-
 </body>
 </html>

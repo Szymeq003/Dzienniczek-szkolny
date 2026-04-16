@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/subjects")
+@RequestMapping("/admin/subjects")
 @RequiredArgsConstructor
 public class SubjectController {
 
@@ -36,7 +36,7 @@ public class SubjectController {
     @PostMapping("/add")
     public String addSubject(@ModelAttribute Subject newSubject) {
         subjectService.save(newSubject);
-        return "redirect:/subjects";
+        return "redirect:/admin/subjects";
     }
 
     @GetMapping("/edit/{id}")
@@ -52,12 +52,12 @@ public class SubjectController {
     public String updateSubject(@PathVariable Long id, @ModelAttribute Subject subject) {
         subject.setId(id);
         subjectService.save(subject);
-        return "redirect:/subjects";
+        return "redirect:/admin/subjects";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteSubject(@PathVariable Long id) {
         subjectService.delete(id);
-        return "redirect:/subjects";
+        return "redirect:/admin/subjects";
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/students")
+@RequestMapping("/admin/students")
 @RequiredArgsConstructor
 public class StudentController {
 
@@ -38,7 +38,7 @@ public class StudentController {
     @PostMapping("/add")
     public String addStudent(@ModelAttribute Student newStudent) {
         studentService.save(newStudent);
-        return "redirect:/students";
+        return "redirect:/admin/students";
     }
 
     @GetMapping("/edit/{id}")
@@ -53,12 +53,12 @@ public class StudentController {
     public String updateStudent(@PathVariable Long id, @ModelAttribute Student student) {
         student.setId(id);
         studentService.save(student);
-        return "redirect:/students";
+        return "redirect:/admin/students";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteStudent(@PathVariable Long id) {
         studentService.delete(id);
-        return "redirect:/students";
+        return "redirect:/admin/students";
     }
 }

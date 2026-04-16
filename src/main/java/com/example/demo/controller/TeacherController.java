@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/teachers")
+@RequestMapping("/admin/teachers")
 @RequiredArgsConstructor
 public class TeacherController {
 
@@ -28,7 +28,7 @@ public class TeacherController {
     @PostMapping("/add")
     public String addTeacher(@ModelAttribute Teacher newTeacher) {
         teacherService.save(newTeacher);
-        return "redirect:/teachers";
+        return "redirect:/admin/teachers";
     }
 
     @GetMapping("/edit/{id}")
@@ -42,12 +42,12 @@ public class TeacherController {
     public String updateTeacher(@PathVariable Long id, @ModelAttribute Teacher teacher) {
         teacher.setId(id);
         teacherService.save(teacher);
-        return "redirect:/teachers";
+        return "redirect:/admin/teachers";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteTeacher(@PathVariable Long id) {
         teacherService.delete(id);
-        return "redirect:/teachers";
+        return "redirect:/admin/teachers";
     }
 }

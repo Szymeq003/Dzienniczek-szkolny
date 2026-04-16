@@ -24,6 +24,7 @@ public class DataLoader implements CommandLineRunner {
     private final RoomRepository roomRepository;
     private final AttendanceRepository attendanceRepository;
     private final AppUserRepository appUserRepository;
+    private final ExamRepository examRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -66,13 +67,12 @@ public class DataLoader implements CommandLineRunner {
             t.setEmail((fName.substring(0, 1) + "." + lName + tCount + "@szkola.pl").toLowerCase().replace(" ", ""));
             teachers.add(teacherRepository.save(t));
             
-            if (tCount < 5) {
-                AppUser teacherUser = new AppUser();
-                teacherUser.setUsername("nauczyciel" + (tCount + 1));
-                teacherUser.setPassword(passwordEncoder.encode("haslo123"));
-                teacherUser.setRole(Role.ROLE_TEACHER);
-                appUserRepository.save(teacherUser);
-            }
+            AppUser teacherUser = new AppUser();
+            teacherUser.setUsername("nauczyciel" + (tCount + 1));
+            teacherUser.setPassword(passwordEncoder.encode("haslo123"));
+            teacherUser.setRole(Role.ROLE_TEACHER);
+            teacherUser.setTeacher(t);
+            appUserRepository.save(teacherUser);
             
             tCount++;
         }
@@ -134,13 +134,12 @@ public class DataLoader implements CommandLineRunner {
                 st.setEmail((fName.substring(0, 1) + "." + lName + unq + "@uczen.pl").toLowerCase().replace(" ", ""));
                 students.add(studentRepository.save(st));
 
-                if (globalStudentCount < 5) {
-                    AppUser studentUser = new AppUser();
-                    studentUser.setUsername("uczen" + (globalStudentCount + 1));
-                    studentUser.setPassword(passwordEncoder.encode("haslo123"));
-                    studentUser.setRole(Role.ROLE_STUDENT);
-                    appUserRepository.save(studentUser);
-                }
+                AppUser studentUser = new AppUser();
+                studentUser.setUsername("uczen" + (globalStudentCount + 1));
+                studentUser.setPassword(passwordEncoder.encode("haslo123"));
+                studentUser.setRole(Role.ROLE_STUDENT);
+                studentUser.setStudent(st);
+                appUserRepository.save(studentUser);
                 globalStudentCount++;
             }
         }
@@ -187,6 +186,29 @@ public class DataLoader implements CommandLineRunner {
                 studentAtt.add(a);
             }
             attendanceRepository.saveAll(studentAtt);
+        }
+
+        // Add dummy exams
+        if (examRepository.count() == 0) {
+            for (SchoolClass sc : schoolClasses) {
+                Exam exam1 = new Exam();
+                exam1.setTitle("Sprawdzian z rozdziału 1");
+                exam1.setDescription("Proszę powtórzyć materiał z podręcznika strony 10-25.");
+                exam1.setDate(LocalDate.now().plusDays(r.nextInt(14) + 1));
+                exam1.setSchoolClass(sc);
+                exam1.setSubject(subjects.get(r.nextInt(subjects.size())));
+                exam1.setTeacher(exam1.getSubject().getTeacher());
+                examRepository.save(exam1);
+
+                Exam exam2 = new Exam();
+                exam2.setTitle("Kartkówka - wzory");
+                exam2.setDescription("Wzory skróconego mnożenia.");
+                exam2.setDate(LocalDate.now().plusDays(r.nextInt(14) + 1));
+                exam2.setSchoolClass(sc);
+                exam2.setSubject(subjects.get(r.nextInt(subjects.size())));
+                exam2.setTeacher(exam2.getSubject().getTeacher());
+                examRepository.save(exam2);
+            }
         }
 
         System.out.println("\n============ DATA LOADER V3 (OGROMNY) ============");

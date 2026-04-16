@@ -1,31 +1,48 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Edytuj Salę</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edytuj Salę - Admin Dashboard</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-    <nav>
-        <a th:href="@{/teachers}">Nauczyciele</a> | 
-        <a th:href="@{/students}">Uczniowie</a> | 
-        <a th:href="@{/classes}">Klasy</a> |
-        <a th:href="@{/subjects}">Przedmioty</a> |
-        <a th:href="@{/rooms}">Sale</a>
-    </nav>
-    <hr />
-
-    <h1>Edycja Istniejącej Sali Zajęciowej</h1>
-    
-    <div style="border: 1px dotted #999; padding: 15px; width: fit-content;">
-        <form th:action="@{/rooms/edit/{id}(id=${room.id})}" method="post" th:object="${room}">
-            <label>Zmień Nazwę Sali: 
-                <br /><br />
-                <input type="text" th:field="*{name}" style="padding: 5px;" required />
-            </label><br /><br />
-            <button type="submit" style="padding: 5px 10px;">💾 Zapisz Zmiany W Bazie</button>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span>Dzienniczek Admin</span>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/admin">Dashboard</a></li>
+                <li><a href="/admin/teachers">Nauczyciele</a></li>
+                <li><a href="/admin/students">Uczniowie</a></li>
+                <li><a href="/admin/classes">Klasy</a></li>
+                <li><a href="/admin/subjects">Przedmioty</a></li>
+                <li><a href="/admin/rooms" class="active">Sale</a></li>
+            </ul>
+        </nav>
+        <form th:action="@{/logout}" method="post" style="margin-top: auto;">
+            <button type="submit" class="btn btn-danger" style="width: 100%;">Wyloguj</button>
         </form>
-    </div>
-    <br />
-    <a th:href="@{/rooms}">Powrót do listy wszystkich Sal</a>
+    </aside>
+
+    <main class="main-content" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+        <div class="card" style="max-width: 500px; width: 100%;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🏫</div>
+                <h1 style="margin-bottom: 0.5rem;">Edycja Sali</h1>
+                <p class="text-muted">Modyfikacja nazwy lub oznaczenia sali lekcyjnej.</p>
+            </div>
+
+            <form th:action="@{/admin/rooms/edit/{id}(id=${room.id})}" method="post" th:object="${room}">
+                <div class="form-group">
+                    <label>Nazwa Sali</label>
+                    <input type="text" class="input-control" th:field="*{name}" placeholder="np. Sala 204" required />
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <a href="/admin/rooms" class="btn btn-ghost" style="flex: 1;">Anuluj</a>
+                    <button type="submit" class="btn btn-primary" style="flex: 2;">Zapisz Zmiany</button>
+                </div>
+            </form>
+        </div>
+    </main>
 </body>
-</html>

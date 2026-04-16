@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moje Oceny - Dzienniczek</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0284c7;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body { background: var(--bg-light); color: var(--text-main); font-family: 'Outfit', sans-serif; padding: 3rem; }
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        .back-link { display: inline-flex; align-items: center; color: var(--primary); text-decoration: none; margin-bottom: 2rem; transition: 0.2s; font-weight: 600; }
+        .back-link:hover { transform: translateX(-5px); }
+
+        .subject-card { background: var(--card-bg); border-radius: 1.5rem; padding: 1.5rem; border: 1px solid var(--border); margin-bottom: 1.5rem; box-shadow: var(--shadow); }
+        .subject-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+        .subject-name { font-size: 1.25rem; font-weight: 800; color: var(--text-main); }
+
+        .grades-list { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .grade-item { width: 2.75rem; height: 2.75rem; display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: var(--primary); border: 2px solid #e2e8f0; border-radius: 0.75rem; font-weight: 800; font-size: 1.1rem; cursor: help; position: relative; transition: all 0.2s; }
+        .grade-item:hover { border-color: var(--primary); transform: scale(1.05); }
+        
+        .grade-item:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-main);
+            color: #fff;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 10;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .avg-badge { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.875rem; font-weight: 700; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="/student/dashboard" class="back-link">← Powrót do dashboardu</a>
+        <h1 style="margin-bottom: 2rem;">Wszystkie Oceny</h1>
+
+        <div th:each="entry : ${gradesBySubject}" class="subject-card">
+            <div class="subject-header">
+                <div class="subject-name" th:text="${entry.key.name}">Matematyka</div>
+            </div>
+            <div class="grades-list">
+                <div th:each="g : ${entry.value}" class="grade-item" 
+                     th:text="${g.value}" 
+                     th:title="${g.date} + (g.comment != null ? ' - ' + g.comment : '')">
+                    5
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#maps.isEmpty(gradesBySubject)}" class="text-muted">
+            Nie masz jeszcze żadnych ocen w systemie.
+        </div>
+    </div>
+
+</body>
+</html>

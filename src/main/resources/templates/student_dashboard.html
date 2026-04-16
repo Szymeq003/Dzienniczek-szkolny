@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strefa Ucznia - Dzienniczek</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .gpa-card {
+            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            color: white;
+            border: none;
+        }
+
+        .gpa-value {
+            font-size: 4rem;
+            font-weight: 800;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .gpa-label {
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .gpa-row {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gpa-row {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container" style="padding-top: 3rem; position: relative;">
+        <form th:action="@{/logout}" method="post" style="position: absolute; top: 0; right: 1.5rem;">
+            <button type="submit" class="btn btn-danger">Wyloguj</button>
+        </form>
+
+        <div class="header" style="margin-bottom: 3rem;">
+            <h1 th:text="'Cześć, ' + ${student.firstName} + '!'">Cześć!</h1>
+            <p class="text-muted" th:text="'Klasa ' + ${student.schoolClass.name}">Klasa 1A</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- GPA Widget -->
+            <div class="card gpa-card gpa-row"
+                style="display: flex; align-items: center; justify-content: space-around; padding: 3rem;">
+                <div style="text-align: center;">
+                    <div class="gpa-label">Twoja średnia ocen</div>
+                    <div class="gpa-value" th:text="${gpa}">4.50</div>
+                </div>
+                <div style="text-align: center;">
+                    <a href="/student/grades" class="btn btn-primary"
+                        style="background: white; color: var(--primary);">Zobacz wszystkie oceny</a>
+                </div>
+            </div>
+
+            <!-- Recent Grades -->
+            <div class="card">
+                <div class="card-header" style="margin-bottom: 1.5rem;">
+                    <h2 class="card-title">Ostatnie oceny</h2>
+                </div>
+                <div class="list-container">
+                    <div th:each="g : ${recentGrades}" class="list-item"
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 700;" th:text="${g.subject.name}">Matematyka</div>
+                            <div class="text-muted" style="font-size: 0.875rem;" th:text="${g.date}">2026-04-16</div>
+                        </div>
+                        <div class="badge badge-success"
+                            style="font-size: 1.25rem; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; border-radius: 0.75rem;"
+                            th:text="${g.value}">5</div>
+                    </div>
+                    <div th:if="${#lists.isEmpty(recentGrades)}" class="text-muted">Brak ocen w systemie.</div>
+                </div>
+            </div>
+
+            <!-- Upcoming Exams -->
+            <div class="card">
+                <div class="card-header" style="margin-bottom: 1.5rem;">
+                    <h2 class="card-title">Najbliższe sprawdziany</h2>
+                </div>
+                <div class="list-container">
+                    <div th:each="ex : ${upcomingExams}" class="list-item"
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 700;" th:text="${ex.title}">Sprawdzian</div>
+                            <div class="text-muted" style="font-size: 0.875rem;" th:text="${ex.subject.name}">Przedmiot
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="badge badge-warning" th:text="${ex.date}">18.04</div>
+                            <div class="text-muted" style="font-size: 0.75rem; margin-top: 0.25rem;">nadchodzi</div>
+                        </div>
+                    </div>
+                    <div th:if="${#lists.isEmpty(upcomingExams)}" class="text-muted">Brak zaplanowanych sprawdzianów.
+                        Ciesz się wolnym!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</body>
+
+</html>

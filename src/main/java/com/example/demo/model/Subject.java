@@ -21,7 +21,7 @@ public class Subject {
     @NotBlank(message = "Subject name is required")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

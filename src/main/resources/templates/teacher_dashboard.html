@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Nauczyciela - Dzienniczek Szkolny</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span>Dzienniczek</span>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/teacher/dashboard" class="active"><span>Dashboard</span></a></li>
+                <li><a href="/teacher/classes"><span>Moje Klasy</span></a></li>
+                <li><a href="/teacher/schedules"><span>Plan Lekcji</span></a></li>
+            </ul>
+        </nav>
+        
+        <form th:action="@{/logout}" method="post" style="margin-top: auto;">
+            <button type="submit" class="btn btn-danger" style="width: 100%;">Wyloguj się</button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="welcome-text">
+                <h1 th:text="'Witaj, ' + ${teacher.firstName} + '!'">Witaj, Nauczycielu!</h1>
+                <p class="stat-label">Oto podsumowanie Twoich zajęć.</p>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value" th:text="${#lists.size(classes)}">0</span>
+                <span class="stat-label">Klasy wychowawcze</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value" th:text="${#lists.size(subjects)}">0</span>
+                <span class="stat-label">Prowadzone przedmioty</span>
+            </div>
+        </div>
+
+        <h2 class="section-title">Twoje Klasy</h2>
+        <div class="grid-container">
+            <div th:each="c : ${classes}">
+                <a th:href="@{/teacher/class/{id}(id=${c.id})}" class="item-card">
+                    <div class="item-name" th:text="'Klasa ' + ${c.name}">Klasa 1A</div>
+                    <div class="item-info">
+                        Liczba uczniów: <span class="badge" th:text="${#lists.size(c.students)}">0</span>
+                    </div>
+                </a>
+            </div>
+            <div th:if="${#lists.isEmpty(classes)}" class="item-info">Brak przypisanych klas wychowawczych.</div>
+        </div>
+
+        <h2 class="section-title" style="margin-top: 3rem;">Twoje Przedmioty</h2>
+        <div class="grid-container">
+            <div th:each="s : ${subjects}">
+                <div class="item-card">
+                    <div class="item-name" th:text="${s.name}">Matematyka</div>
+                    <div class="item-info">
+                        Status: <span class="badge">Aktywny</span>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(subjects)}" class="item-info">Brak prowadzonych przedmiotów.</div>
+        </div>
+
+        <h2 class="section-title" style="margin-top: 3rem;">Zaplanowane Sprawdziany</h2>
+        <div class="grid-container" style="margin-bottom: 3rem;">
+            <div th:each="ex : ${exams}" class="item-card">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <div class="item-name" th:text="${ex.title}">Sprawdzian</div>
+                        <div class="item-info" th:text="${ex.subject.name} + ' - ' + ${ex.schoolClass.name}">Info</div>
+                        <div class="stat-label" th:text="${ex.date}">Data</div>
+                    </div>
+                    <a th:href="@{/teacher/exam/delete/{id}(id=${ex.id})}" class="badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">Usuń</a>
+                </div>
+            </div>
+            <div class="item-card" style="border: 2px dashed var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="document.getElementById('addExamForm').style.display='block'">
+                <span class="text-muted">+ Zaplanuj nowy sprawdzian</span>
+            </div>
+        </div>
+
+        <!-- Hidden Add Exam Form -->
+        <div id="addExamForm" class="card" style="display:none; margin-bottom: 3rem; border: 1px solid var(--primary);">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <span style="font-size: 1.5rem;">📅</span>
+                <h3 style="margin: 0;">Nowy Sprawdzian</h3>
+            </div>
+            
+            <form th:action="@{/teacher/exam/add}" method="post">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Tytuł</label>
+                        <input type="text" name="title" class="input-control" placeholder="np. Sprawdzian z działu 1" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Data</label>
+                        <input type="date" name="date" class="input-control" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Przedmiot</label>
+                        <select name="subjectId" class="input-control" required>
+                            <option value="" disabled selected>Wybierz przedmiot</option>
+                            <option th:each="s : ${subjects}" th:value="${s.id}" th:text="${s.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Klasa</label>
+                        <select name="classId" class="input-control" required>
+                            <option value="" disabled selected>Wybierz klasę</option>
+                            <option th:each="c : ${classes}" th:value="${c.id}" th:text="${c.name}"></option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label>Opis (opcjonalnie)</label>
+                    <textarea name="description" class="input-control" placeholder="Dodaj krótki opis sprawdzianu..." style="min-height: 100px;"></textarea>
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-ghost" onclick="document.getElementById('addExamForm').style.display='none'">Anuluj</button>
+                    <button type="submit" class="btn btn-primary">Zapisz Sprawdzian</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>
